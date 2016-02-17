@@ -55,9 +55,9 @@ player.checkPlaying() retourne:
 
 var player = new Mplayer();
 
-var queue = ['cache/mlg.mp3', 'cache/sorry.mp3'];
+var queue = ['cache/mlg.mp3', 'cache/xd.mp3', 'cache/triple.mp3'];
 var queuePos = 0;
-var AUTO_NEXT = false;
+var AUTO_NEXT = true;
 var REPEAT = true;
 
 var setFile = function(file){
@@ -93,23 +93,23 @@ var togglePause = function(){
 };
 
 var next = function(){
-	if(queuePos == queue.length)
-		queuePos = 0;
-	setFile(queue[queuePos++]);
+	if(queuePos + 1 > queue.length)
+		queuePos = -1;
+	setFile(queue[++queuePos]);
 	play();
 };
 
 var previous = function(){
-	if((queuePos - 1) == -1)
-		queuePos = queue.length - 1;
-	setFile(queuePos);
+	if(queuePos - 1 == -1)
+		queuePos = queue.length;
+	setFile(queue[--queuePos]);
 	play();
 };
 
 var autoNext = function(){
 	if(!player.checkPlaying()){
 		if(AUTO_NEXT){
-			next();
+			previous();
 		}
 	}
 };
