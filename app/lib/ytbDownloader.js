@@ -29,13 +29,13 @@ function puts(error, stdout, stderr){
 }
 
 function cleanName(name){
-	name = name.replace(/\"/g, ''); //Change spaces into underscores
+	//name = name.replace(/\ /g, '_'); //Change spaces into underscores
 
 	return name;
 }
 
 function downloadVideo(url, name, callback){
-	exec('curl -L -o "' + cleanName(name) + '.mp3 "' + url, puts).on('close', function(code){
+	exec('curl -L -o "' + cleanName(name) + '.mp3" ' + url, puts).on('close', function(code){
 		console.log(cleanName(name));
 	});
 }
