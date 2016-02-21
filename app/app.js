@@ -1,20 +1,32 @@
 /**
-* Written by Victor Bury and Antonio Calapez
+* Written by Victor Bury and Antonio Calapez (mention spéciale Sacha Lecompte)
 **/
 
 var utils = require('./lib/utils.js');
 var Mplayer = require('node-mplayer');
 var express = require('express');
 var app = express();
+//var STATES = require('./lib/playerStates.js');
+var currentState = 0;
 
 var PORT = 1337;
 
 utils.checkCache();
 var CACHE_PATH = __dirname + '/cache/';
 
+// var changeCurrentState = function(newState){
+// this.currentState = newState;
+// };
+
 /**
 
 PLAYER DOCUMENTATION
+
+TODO:
+-> Check the player state
+-> Function to switch playlist on the fly
+-> Function to create playlists
+-> Save playlists in some kind of database maybe?
 
 player.setFile() a besoin d'être try/catch
 car il crash si le morceau précédent est fini
@@ -55,12 +67,15 @@ player.checkPlaying() retourne:
 
 var player = new Mplayer();
 
-var queue = ['mlg', 'xd', 'triple', 'sorry', 'stitches'];
+var queue = utils.musicList();
+console.log(queue);
 var queuePos = 0;
-var AUTO_NEXT = false;
-var REPEAT = true;
+//changeCurrentState(STATES.STOPPED);
+var AUTO_NEXT = !true; // Si la variable est à true le player joue tout seul les musiques suivantes dans la file
+var REPEAT = true; //TODO: l'utiliser dans next()
 
 var setFile = function(file){
+	//changeCurrentState(STATES.STOPPED);
 	try{
 		player.setFile(CACHE_PATH + file + '.mp3');
 	} catch (error) {
@@ -75,16 +90,17 @@ Appeller stop() après avoir changé un morceau crash le player !
 var play = function(){
 	//stop();
 	player.play();
+	//changeCurrentState(STATES.PLAYING);
 	console.log(nowPlaying());
 };
 
 var stop = function(){
 	try {
 		player.stop();
+		//changeCurrentState(STATES.STOPPED);
 	} catch (error) {
 		console.log(error);
 	}
-	console.log('[nowPlaying]', queue[queuePos]);
 };
 
 //TODO: return le state dans lequel le player est
@@ -92,6 +108,7 @@ var stop = function(){
 var togglePause = function(){
 	try {
 		player.pause();
+		//changeCurrentState(currentState == STATES.PLAYING ? STATES.PAUSED : STATES.PLAYING);
 	} catch (error) {
 		console.log(error);
 	}
@@ -131,10 +148,9 @@ Player Controls API
 
 var playerRouter = express.Router();
 
-//Sends back all the player routes
-playerRouter.get('/', function(req, res){
-    res.setHeader('Content-Type', 'application/json');
-    res.send(JSON.stringify({message: 'Hello, world!'}));
+playerRouter.get('/play', function(req, res){
+	play();
+	res.send(nowPlaying());
 });
 
 playerRouter.get('/togglePause', function(req, res){
@@ -144,12 +160,12 @@ playerRouter.get('/togglePause', function(req, res){
 
 playerRouter.get('/next', function(req, res){
 	next();
-	res.send('Calling next() method');
+	res.send(nowPlaying());
 });
 
 playerRouter.get('/previous', function(req, res){
 	previous();
-	res.send('Calling previous method');
+	res.send(nowPlaying());
 });
 
 /**
@@ -163,6 +179,6 @@ var logger = function(req, res, next){
 app.use(logger);
 app.use('/api/controls', playerRouter);
 
-app.listen(1337, function(){
-	console.log('App listening on port', 1337);
+app.listen(PORT, function(){
+	console.log('App listening on port', PORT);
 });
