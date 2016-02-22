@@ -3,8 +3,6 @@ var fs = require('fs'),
 	path = require('path'),
 	Youtube = require('youtube-node');
 
-var youtube = new Youtube();
-youtube.setKey('AIzaSyAxIMJITZVLc0rH7h_8chJFtuZ4wQEF9uk');
 
 module.exports = {
 	checkCache: function() {
@@ -12,7 +10,7 @@ module.exports = {
 			fs.mkdirSync("./cache");
 		}
 	},
-	musicList: function(){
+	musicList: function() {
 		var files = fs.readdirSync('./cache/');
 		var queue = [];
 		for(var i in files){
@@ -22,14 +20,11 @@ module.exports = {
 
 		return queue; //caca
 	},
-	ytbSearch: function(search, callback){
-		youtube.search(search, 1, function(err, result){
-			if(err){
-				console.log(err);
-				callback(err);
-			}else{
-				callback(err, result);
-			}
-		});
-	},
+	in_array: function(string, array) {
+		for(var i in array){
+			if(array[i] === string)
+				return true
+		}
+		return false;
+	}
 };

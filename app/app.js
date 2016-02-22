@@ -4,6 +4,7 @@
 
 var utils = require('./lib/utils.js');
 var Mplayer = require('node-mplayer');
+var youtube = require('./lib/youtube.js');
 var express = require('express');
 var app = express();
 //var STATES = require('./lib/playerStates.js');
@@ -13,6 +14,7 @@ var PORT = 1337;
 
 utils.checkCache();
 var CACHE_PATH = __dirname + '/cache/';
+youtube.setCachePath(CACHE_PATH);
 
 // var changeCurrentState = function(newState){
 // this.currentState = newState;
@@ -87,11 +89,24 @@ var setFile = function(file){
 Appeller stop() après avoir changé un morceau crash le player !
 **/
 
-var play = function(){
-	//stop();
-	player.play();
-	//changeCurrentState(STATES.PLAYING);
-	console.log(nowPlaying());
+var play = function(file){
+	if(file === undefined){
+		//stop();
+		player.play();
+		//changeCurrentState(STATES.PLAYING);
+		console.log(nowPlaying());
+	} else {
+		setFile(file);
+		player.play();
+		var index = queue.indexOf(file);
+		if(index == -1){
+			queue.push(file);
+			queuePos = queue.indexOf(file);
+		}
+		else
+			queuePos = index;
+		console.log(nowPlaying());
+	}
 };
 
 var stop = function(){
@@ -151,6 +166,25 @@ var playerRouter = express.Router();
 playerRouter.get('/play', function(req, res){
 	play();
 	res.send(nowPlaying());
+});
+
+playerRouter.get('/play/:song', function(req, res){
+	if(!utils.in_array(req.params.song, utils.musicList)){
+		youtube.search(req.params.song, function(data){
+			if(!utils.in_array(data.title, utils.musicList())){
+				youtube.download(data.id, function(name){
+					play(name);
+					res.send(nowPlaying());
+				});
+			} else {
+				play(data.title);
+				res.send(nowPlaying());
+			}
+		});
+	} else {
+		play(req.params.song);
+		res.send(nowPlaying());
+	}
 });
 
 playerRouter.get('/togglePause', function(req, res){
