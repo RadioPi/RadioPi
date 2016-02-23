@@ -1,5 +1,6 @@
 /**
 * Written by Victor Bury and Antonio Calapez (mention spéciale Sacha Lecompte)
+* TODO: Fixer l'autonext
 **/
 
 var utils = require('./lib/utils.js');
@@ -202,6 +203,12 @@ playerRouter.get('/previous', function(req, res){
 	res.send(nowPlaying());
 });
 
+playerRouter.get('/list', function(req, res){
+    res.setHeader('Content-Type', 'application/json');
+	res.send(JSON.stringify({
+		songs: utils.musicList()
+	}));
+});
 /**
 Express APP
 **/
