@@ -1,5 +1,5 @@
 {
-  "name": "PiTube Server",
+  "name": "PiTube",
   "version": "1.0.0",
   "description": "",
   "main": "server.js",
