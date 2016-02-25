@@ -26,5 +26,14 @@ module.exports = {
 				return true
 		}
 		return false;
+	},
+	cleanName: function(name){
+			name = name.replace(/"/g, '');
+			name = name.replace(/\//g, '');
+			name = name.replace(/\\/g, '');
+			name = name.replace(/#/g, '');
+			name = name.replace(/\(/g, '');
+			name = name.replace(/\)/g, '');
+			return name;
 	}
 };

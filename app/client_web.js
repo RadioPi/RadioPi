@@ -15,7 +15,7 @@ new WebpackDevServer(webpack(config), {
   publicPath: config.output.publicPath,
   hot: true,
   historyApiFallback: true
-}).listen(3000, 'localhost', function (err, result) {
+}).listen('3000', function (err, result) {
   if (err) {
     console.log(err);
   }
@@ -28,13 +28,14 @@ new WebpackDevServer(webpack(config), {
 
 var express = require('express');
 var app = express();
+var utils = require('./lib/utils.js');
 //var STATES = require('./lib/playerStates.js');
 var currentState = 0;
 
 var PORT = 1337;
 
 var nowPlaying = function(){
-	return "Now playing: MLG";
+	return "MLG";
 };
 
 /**
@@ -43,29 +44,25 @@ Player Controls API
 
 var playerRouter = express.Router();
 
+playerRouter.get('/nowPlaying', function(req, res){
+	res.setHeader('Content-Type', 'application/json');
+	res.send(JSON.stringify({
+		nowPlaying: nowPlaying()
+	}));
+});
+
 playerRouter.get('/play', function(req, res){
-	// play();
-	res.send(nowPlaying());
+    res.setHeader('Content-Type', 'application/json');
+	res.send(JSON.stringify({
+		nowPlaying: nowPlaying()
+	}));
 });
 
 playerRouter.get('/play/:song', function(req, res){
-	// if(!utils.in_array(req.params.song, utils.musicList)){
-	// 	youtube.search(req.params.song, function(data){
-	// 		if(!utils.in_array(data.title, utils.musicList())){
-	// 			youtube.download(data.id, function(name){
-	// 				play(name);
-	// 				res.send(nowPlaying());
-	// 			});
-	// 		} else {
-	// 			play(data.title);
-	// 			res.send(nowPlaying());
-	// 		}
-	// 	});
-	// } else {
-	// 	play(req.params.song);
-	// 	res.send(nowPlaying());
-	// }
-	res.send(nowPlaying());
+	res.setHeader('Content-Type', 'application/json');
+	res.send(JSON.stringify({
+		nowPlaying: req.params.song
+	}));
 });
 
 playerRouter.get('/togglePause', function(req, res){
@@ -74,20 +71,23 @@ playerRouter.get('/togglePause', function(req, res){
 });
 
 playerRouter.get('/next', function(req, res){
-	// next();
-	res.send(nowPlaying());
+	res.setHeader('Content-Type', 'application/json');
+	res.send(JSON.stringify({
+		nowPlaying: nowPlaying()
+	}));
 });
 
 playerRouter.get('/previous', function(req, res){
-	// previous();
-	res.send(nowPlaying());
+	res.setHeader('Content-Type', 'application/json');
+	res.send(JSON.stringify({
+		nowPlaying: nowPlaying()
+	}));
 });
 
 playerRouter.get('/list', function(req, res){
     res.setHeader('Content-Type', 'application/json');
 	res.send(JSON.stringify({
-		// songs: utils.musicList()
-		songs: ['mlg', 'yolo', 'ayyy']
+		songs: utils.musicList()
 	}));
 });
 /**

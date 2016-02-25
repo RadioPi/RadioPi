@@ -2,6 +2,7 @@ var http = require('http');
 var fs = require('fs');
 var sys = require('util');
 var exec = require('child_process').exec;
+var utils = require('./utils.js');
 
 var Youtube = require('youtube-node');
 
@@ -41,15 +42,9 @@ function puts(error, stdout, stderr){
 	console.log(stdout);
 }
 
-function cleanName(name){
-	//name = name.replace(/\ /g, '_');
-	name = name.replace(/"/g, '');
-	return name;
-}
-
 function downloadVideo(url, name, callback){
-	exec('curl -L -o "' + cachePath + name + '.mp3" ' + url, puts).on('close', function(code){
-		callback(name);
+	exec('curl -L -o "' + cachePath + utils.cleanName(name) + '.mp3" ' + url, puts).on('close', function(code){
+		callback(utils.cleanName(name));
 	});
 }
 
