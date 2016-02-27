@@ -1,0 +1,22 @@
+#table-wrapper {
+  position:relative;
+}
+#table-scroll {
+  height:60%;
+  overflow:auto;
+  margin-top:20px;
+}
+
+.playerBar {
+    background-color: #e6e6e6;
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    height: 50px;
+    width: 100%;
+    padding-left: 15%;
+
+    @media screen and (max-width: 600px) {
+    padding-left: 0%;
+  }
+}

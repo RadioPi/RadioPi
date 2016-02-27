@@ -3,10 +3,8 @@ import $ from 'jquery';
 
 /** Image pour les contrôles du player */
 var next = require('../img/next.png');
-var playPause = require('../img/play-pause.png');
+var pause = require('../img/pause.png');
 var previous = require('../img/previous.png');
-
-const BASE_URL = 'http://192.168.1.103:1337/api/controls/';
 
 export default class PlayerBar extends Component {
 	constructor(props){
@@ -15,7 +13,8 @@ export default class PlayerBar extends Component {
 
 	next = (e) => {
 		e.preventDefault();
-		$.get(BASE_URL + 'next', function(data){
+		console.log(this.props.baseUrl + 'next');
+		$.get(this.props.baseUrl + 'next', function(data){
 			console.log(data);
 			//this.props.updateTitle(data);
 		})
@@ -23,14 +22,16 @@ export default class PlayerBar extends Component {
 
 	previous = (e) => {
 		e.preventDefault();
-		$.get(BASE_URL + 'previous', (data) => {
+		console.log(this.props.baseUrl + 'previous');
+		$.get(this.props.baseUrl + 'previous', (data) => {
 			//this.props.updateTitle(data.nowPlaying);
 		})
 	}
 
 	togglePause = (e) => {
 		e.preventDefault();
-		$.get(BASE_URL + 'togglePause', (data) => {
+		console.log(this.props.baseUrl + 'togglePause');
+		$.get(this.props.baseUrl + 'togglePause', (data) => {
 			console.log(data.message);
 		})
 	}
@@ -38,9 +39,13 @@ export default class PlayerBar extends Component {
 	render(){
 		return (
 			<div className="playerBar">
-				<a onClick={this.previous} ><img src={previous} /></a>
-				<a onClick={this.togglePause} ><img src={playPause} /></a>
-				<a onClick={this.next} ><img src={next} /></a>
+				<div  className="row">
+					<div className="large-12 columns">
+						<a onClick={this.previous} ><img src={previous} /></a>
+						<a onClick={this.togglePause} ><img src={pause} /></a>
+						<a onClick={this.next} ><img src={next} /></a>
+					</div>
+				</div>
 			</div>
 			)
 	}

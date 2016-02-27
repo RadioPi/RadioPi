@@ -26,21 +26,23 @@ export default class Player extends Component {
 	render() {
 		return (
 			<div className="large-12 columns">
-				<PlayerBar updateTitle={this.props.updateTitle}/>
 				<h4>Songs:</h4>
 				<SearchBar baseUrl={this.props.baseUrl} updateTitle={this.props.updateTitle} songs={this.props.songs}/>
-				<div id="songs-wrapper">
-					<table id="songs">
-						<tbody>
-							{this.props.songs.map((value) => {
-								return (
-									<SongCard key={value} data={value} changeSong={this.handleSongLinkClicks} songName={value} />
-									)
-								})
-							}
-						</tbody>
-					</table>
+				<div id="table-wrapper">
+					<div id="table-scroll">
+						<table id="songs">
+							<tbody>
+								{this.props.songs.map((value) => {
+									return (
+										<SongCard key={value} data={value} changeSong={this.handleSongLinkClicks} songName={value} />
+										)
+									})
+								}
+							</tbody>
+						</table>
+					</div>
 				</div>
+				<PlayerBar baseUrl={this.props.baseUrl} title={this.props.title} updateTitle={this.props.updateTitle}/>
 			</div>
 			)
 	}

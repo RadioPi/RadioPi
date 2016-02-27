@@ -10,13 +10,24 @@ export default class App extends Component {
 		super(props);
 		this.state = {
 			songs: [],
-			title: "#RadioPi"
+			title: "RadioPi"
 		};
+	}
+
+	pushSong = (song) => {
+		let youShallNotPush = true;
+		for(let song in this.state.songs){
+			youShallNotPush = this.state.songs[song] == song ? false : true;
+		}
+		if(youShallNotPush)
+			this.setState({
+				songs: this.state.songs.push(song)
+			});
 	}
 
 	updateTitle = (title) => {
 		this.setState({
-			title: title + " | #RadioPi"
+			title: title
 		});
 	}
 
@@ -29,12 +40,12 @@ export default class App extends Component {
 	}
 
 	render(){
-		window.document.title = this.state.title;
+		window.document.title = this.state.title + " | #RadioPi";
 		return (
 			<div>
 				<TopBar title={this.state.title}/>
 				<div className="row">
-					<Player baseUrl={BASE_URL} updateTitle={this.updateTitle} songs={this.state.songs}/>
+					<Player pushSong={this.pushSong} title={this.state.title} baseUrl={BASE_URL} updateTitle={this.updateTitle} songs={this.state.songs}/>
 				</div>
 			</div>
 			)

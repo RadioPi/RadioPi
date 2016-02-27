@@ -153,23 +153,21 @@ var previous = function(){
 
 var autoNext = function() {
 	if(AUTO_NEXT){
-		if(player.checkPlaying()){
-			try{
-				player.getPercentPosition(function(elapsedPercent){
-					if(elapsedPercent !==undefined){
-						if(elapsedPercent>=97){
-							next();
-						}
+		try{
+			player.getPercentPosition(function(elapsedPercent){
+				if(elapsedPercent !==undefined){
+					if(elapsedPercent>=97){
+						next();
 					}
-				});
-			} catch (e){
-				console.log(e);
-			}
+				}
+			});
+		} catch (e){
+			console.log(e);
 		}
 	}
 };
 
-setInterval(autoNext, 1000);
+setInterval(autoNext, 500);
 
 var nowPlaying = function(){
 	return queue[queuePos];
@@ -195,13 +193,13 @@ playerRouter.get('/play/:song', function(req, res){
 		youtube.search(req.params.song, function(data){
 			if(!utils.in_array(utils.cleanName(data.title), utils.musicList())){
 				youtube.download(data.id, function(name){
-					play(name);
+					play(utils.cleanName(name));
 					res.send(JSON.stringify({
 						nowPlaying: nowPlaying()
 					}));
 				});
 			} else {
-				play(data.title);
+				play(utils.cleanName(data.title));
 				res.send(JSON.stringify({
 					nowPlaying: nowPlaying()
 				}));
@@ -212,20 +210,20 @@ playerRouter.get('/play/:song', function(req, res){
 			youtube.search(req.params.song, function(data){
 				if(!utils.in_array(utils.cleanName(data.title), utils.musicList())){
 					youtube.download(data.id, function(name){
-						play(name);
+						play(utils.cleanName(name));
 						res.send(JSON.stringify({
 							nowPlaying: nowPlaying()
 						}));
 					});
 				} else {
-					play(data.title);
+					play(utils.cleanName(data.title));
 					res.send(JSON.stringify({
 						nowPlaying: nowPlaying()
 					}));
 				}
 			});
 		} else {
-			play(req.params.song);
+			play(utils.cleanName(req.params.song));
 			res.send(JSON.stringify({
 				nowPlaying: nowPlaying()
 			}));
