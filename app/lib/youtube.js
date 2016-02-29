@@ -3,6 +3,7 @@ var fs = require('fs');
 var sys = require('util');
 var exec = require('child_process').exec;
 var utils = require('./utils.js');
+var request = require('request');
 
 var Youtube = require('youtube-node');
 
@@ -48,6 +49,20 @@ function downloadVideo(url, name, callback){
 	});
 }
 
+function download2(url, name, callback){
+    var f = fs.createWriteStream(cachePath + utils.cleanName(name) + '.mp3');
+	request
+	.get(url)
+	.on('error', function(err) {
+		console.log(err);
+	})
+	.pipe(f);
+	f.on('finish', function(){
+		callback(utils.cleanName(name));
+	});
+}
+
+
 exports.search = function(search, callback){
 	youtube.search(search, 1, function(err, result){
 		if(err){
@@ -68,7 +83,9 @@ exports.setCachePath = function(path){
 
 exports.download = function(id, callback){
 	callApi(id, function(data){
-		downloadVideo(data.link, data.title, callback);
+		download2(data.link, data.title, callback);
+		// downloadVideo(data.link, data.title, callback);
 	});
 };
+
 

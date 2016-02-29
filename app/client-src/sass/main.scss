@@ -1,7 +1,12 @@
-#table-wrapper {
+$white: #ffffff;
+$greySolid: #828282;
+$sandSolid: #ecebe8;
+$green: #84bd00;
+
+.table-wrapper {
   position:relative;
 }
-#table-scroll {
+.table-scroll {
   height:60%;
   overflow:auto;
   margin-top:20px;

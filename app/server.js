@@ -15,19 +15,15 @@ var Mplayer = require('node-mplayer');
 var youtube = require('./lib/youtube.js');
 var express = require('express');
 var app = express();
-//var STATES = require('./lib/playerStates.js');
+var self = this;
+var Song = require('./lib/song.js');
 
 
 // Initial config
-//var currentState = 0;
 var PORT = 1337;
 utils.checkCache();
 var CACHE_PATH = __dirname + '/cache/';
 youtube.setCachePath(CACHE_PATH);
-
-// var changeCurrentState = function(newState){
-// this.currentState = newState;
-// };
 
 /**
 
@@ -78,20 +74,34 @@ player.checkPlaying() retourne:
 
 var player = new Mplayer();
 
-var queue = utils.musicList();
+var queue = [];
 var queuePos = 0;
-//changeCurrentState(STATES.STOPPED);
 var AUTO_NEXT = true; // Si la variable est à true le player joue tout seul les musiques suivantes dans la file
 var REPEAT = true; //TODO: l'utiliser dans next()
 
 var setFile = function(file){
-	//changeCurrentState(STATES.STOPPED);
+	var song = '';
+	if(typeof(file) === 'string'){
+		song = file;
+	} else if(typeof(file) === 'object') {
+		song = file.name;
+	}
+
 	try{
-		player.setFile(CACHE_PATH + file + '.mp3');
+		player.setFile(CACHE_PATH + song + '.mp3');
 	} catch (error) {
-		player = new Mplayer(CACHE_PATH + file + '.mp3');
+		player = new Mplayer(CACHE_PATH + song + '.mp3');
 	}
 };
+
+function addToQueue(song){
+	if(typeof(song) === 'string'){
+		var nSong = new Song(song);
+		queue.push(nSong);
+	} else if(typeof(song) === 'object') {
+		queue.push(song);
+	}
+}
 
 /**
 Appeller stop() après avoir changé un morceau crash le player !
@@ -99,20 +109,16 @@ Appeller stop() après avoir changé un morceau crash le player !
 
 var play = function(file){
 	if(file === undefined){
-		//stop();
+		setFile(queue[queuePos].name);
 		player.play();
-		//changeCurrentState(STATES.PLAYING);
 		console.log(nowPlaying());
 	} else {
-		setFile(file);
-		player.play();
-		var index = queue.indexOf(file);
-		if(index == -1){
-			queue.push(file);
-			queuePos = queue.indexOf(file);
-		}
-		else
-			queuePos = index;
+		var nSong = new Song(file);
+		addToQueue(nSong);
+		setFile(nSong);
+		queuePos = queue.map(function(e) { return e.name; }).indexOf(file) - 1;
+		next();
+		console.log(queue);
 		console.log(nowPlaying());
 	}
 };
@@ -120,7 +126,6 @@ var play = function(file){
 var stop = function(){
 	try {
 		player.stop();
-		//changeCurrentState(STATES.STOPPED);
 	} catch (error) {
 		console.log(error);
 	}
@@ -131,7 +136,6 @@ var stop = function(){
 var togglePause = function(){
 	try {
 		player.pause();
-		//changeCurrentState(currentState == STATES.PLAYING ? STATES.PAUSED : STATES.PLAYING);
 	} catch (error) {
 		console.log(error);
 	}
@@ -162,7 +166,8 @@ var autoNext = function() {
 				}
 			});
 		} catch (e){
-			console.log(e);
+			if(e === "[Error: This socket is closed.]")
+				next();
 		}
 	}
 };
@@ -170,7 +175,7 @@ var autoNext = function() {
 setInterval(autoNext, 500);
 
 var nowPlaying = function(){
-	return queue[queuePos];
+	return queue[queuePos].name;
 };
 
 /**
@@ -182,9 +187,9 @@ var playerRouter = express.Router();
 playerRouter.get('/play', function(req, res){
 	play();
 	res.setHeader('Content-Type', 'application/json');
-	res.send(JSON.stringify({
+	res.send({
 		nowPlaying: nowPlaying()
-	}));
+	});
 });
 
 playerRouter.get('/play/:song', function(req, res){
@@ -194,15 +199,15 @@ playerRouter.get('/play/:song', function(req, res){
 			if(!utils.in_array(utils.cleanName(data.title), utils.musicList())){
 				youtube.download(data.id, function(name){
 					play(utils.cleanName(name));
-					res.send(JSON.stringify({
+					res.send({
 						nowPlaying: nowPlaying()
-					}));
+					});
 				});
 			} else {
 				play(utils.cleanName(data.title));
-				res.send(JSON.stringify({
+				res.send({
 					nowPlaying: nowPlaying()
-				}));
+				});
 			}
 		});
 	} else {
@@ -211,53 +216,92 @@ playerRouter.get('/play/:song', function(req, res){
 				if(!utils.in_array(utils.cleanName(data.title), utils.musicList())){
 					youtube.download(data.id, function(name){
 						play(utils.cleanName(name));
-						res.send(JSON.stringify({
+						res.send({
 							nowPlaying: nowPlaying()
-						}));
+						});
 					});
 				} else {
 					play(utils.cleanName(data.title));
-					res.send(JSON.stringify({
+					res.send({
 						nowPlaying: nowPlaying()
-					}));
+					});
 				}
 			});
 		} else {
 			play(utils.cleanName(req.params.song));
-			res.send(JSON.stringify({
+			res.send({
 				nowPlaying: nowPlaying()
-			}));
+			});
 		}
 	}
 
 });
 
+playerRouter.get('/play/:song/next', function(req, res){
+	res.setHeader('Content-Type', 'application/json');
+	if(utils.in_array(req.params.song, utils.musicList())){
+		addToQueue(req.params.song);
+		res.send({
+			queue: queue,
+			nowPlaying: nowPlaying()
+		});
+	} else {
+		youtube.search(req.params.song, function(data){
+			if(utils.in_array(utils.cleanName(data.title), utils.musicList())){
+				addToQueue(utils.cleanName(data.title));
+				res.send({
+					queue: queue,
+					nowPlaying: nowPlaying()
+				});
+			} else {
+				youtube.download(data.id, function(name){
+					addToQueue(name);
+					res.send({
+						queue: queue,
+						nowPlaying: nowPlaying()
+					});
+				});
+			}
+		});
+	}
+	if(queue.length == 1)
+		play();
+
+});
+
 playerRouter.get('/togglePause', function(req, res){
 	togglePause();
-	res.send(JSON.stringify({
+	res.send({
 		message: "Calling togglePause method"
-	}));
+	});
 });
 
 playerRouter.get('/next', function(req, res){
 	next();
-	res.send(JSON.stringify({
+	res.send({
 		nowPlaying: nowPlaying()
-	}));
+	});
 });
 
 playerRouter.get('/previous', function(req, res){
 	previous();
-	res.send(JSON.stringify({
+	res.send({
 		nowPlaying: nowPlaying()
-	}));
+	});
 });
 
 playerRouter.get('/list', function(req, res){
     res.setHeader('Content-Type', 'application/json');
-	res.send(JSON.stringify({
+	res.send({
 		songs: utils.musicList()
-	}));
+	});
+});
+
+playerRouter.get('/queue', function(req, res){
+	res.setHeader('Content-Type', 'application/json');
+	res.send({
+		queue: queue
+	});
 });
 /**
 Express APP

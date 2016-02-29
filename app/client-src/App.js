@@ -10,6 +10,7 @@ export default class App extends Component {
 		super(props);
 		this.state = {
 			songs: [],
+			queue: [],
 			title: "RadioPi"
 		};
 	}
@@ -25,6 +26,12 @@ export default class App extends Component {
 			});
 	}
 
+	updateQueue = (queue) => {
+		this.setState({
+			queue: queue
+		});
+	}
+
 	updateTitle = (title) => {
 		this.setState({
 			title: title
@@ -37,6 +44,11 @@ export default class App extends Component {
 				songs: data.songs
 			});
 		});
+		$.get(BASE_URL + 'queue', (data) => {
+			this.setState({
+				queue: data.queue
+			})
+		});
 	}
 
 	render(){
@@ -44,9 +56,13 @@ export default class App extends Component {
 		return (
 			<div>
 				<TopBar title={this.state.title}/>
-				<div className="row">
-					<Player pushSong={this.pushSong} title={this.state.title} baseUrl={BASE_URL} updateTitle={this.updateTitle} songs={this.state.songs}/>
-				</div>
+				<Player pushSong={this.pushSong}
+				title={this.state.title}
+				baseUrl={BASE_URL}
+				updateTitle={this.updateTitle}
+				updateQueue={this.updateQueue}
+				songs={this.state.songs}
+				queue={this.state.queue} />
 			</div>
 			)
 	}

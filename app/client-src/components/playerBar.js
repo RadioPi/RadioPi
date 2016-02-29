@@ -14,17 +14,15 @@ export default class PlayerBar extends Component {
 	next = (e) => {
 		e.preventDefault();
 		console.log(this.props.baseUrl + 'next');
-		$.get(this.props.baseUrl + 'next', function(data){
-			console.log(data);
-			//this.props.updateTitle(data);
+		$.get(this.props.baseUrl + 'next', (data) => {
+			this.props.updateTitle(data.nowPlaying);
 		})
 	}
 
 	previous = (e) => {
 		e.preventDefault();
-		console.log(this.props.baseUrl + 'previous');
 		$.get(this.props.baseUrl + 'previous', (data) => {
-			//this.props.updateTitle(data.nowPlaying);
+			this.props.updateTitle(data.nowPlaying);
 		})
 	}
 

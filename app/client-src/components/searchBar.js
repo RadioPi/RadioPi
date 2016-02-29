@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import $ from 'jquery';
 
+
 export default class SearchBar extends Component {
 	constructor(props){
 		super(props);
@@ -18,11 +19,13 @@ export default class SearchBar extends Component {
 
 	playSong = (e) => {
 		e.preventDefault();
-		$.get(this.props.baseUrl + 'play/' + this.state.search, (data) => {
+		this.setState({
+			search: ''
+		});
+		$.get(this.props.baseUrl + 'play/' + this.state.search + '/next/', (data) => {
+			console.log(data);
 			this.props.updateTitle(data.nowPlaying);
-			this.setState({
-				search: ''
-			});
+			this.props.updateQueue(data.queue);
 		});
 	}
 
