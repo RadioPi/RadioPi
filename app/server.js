@@ -103,6 +103,14 @@ function addToQueue(song){
 	}
 }
 
+function removeFromQueue(id){
+	var index = queue.map(function(e) { return e.id; }).indexOf(id);
+	if(index > -1){
+		queue.splice(index, 1);
+		console.log('We got a match! Kappa');
+	}
+}
+
 /**
 Appeller stop() après avoir changé un morceau crash le player !
 **/
@@ -241,7 +249,7 @@ playerRouter.get('/play/:song/next', function(req, res){
 	res.setHeader('Content-Type', 'application/json');
 	if(utils.in_array(req.params.song, utils.musicList())){
 		addToQueue(req.params.song);
-		if(queue.length == 1)
+		if(queue.length == 1 && (!player.checkPlaying))
 			play();
 		res.send({
 			queue: queue,
@@ -251,7 +259,7 @@ playerRouter.get('/play/:song/next', function(req, res){
 		youtube.search(req.params.song, function(data){
 			if(utils.in_array(utils.cleanName(data.title), utils.musicList())){
 				addToQueue(utils.cleanName(data.title));
-				if(queue.length == 1)
+				if(queue.length == 1 && (!player.checkPlaying))
 					play();
 				res.send({
 					queue: queue,
@@ -260,7 +268,7 @@ playerRouter.get('/play/:song/next', function(req, res){
 			} else {
 				youtube.download(data.id, function(name){
 					addToQueue(name);
-							if(queue.length == 1)
+							if(queue.length == 1 && (!player.checkPlaying))
 					play();
 					res.send({
 						queue: queue,
@@ -294,6 +302,11 @@ playerRouter.get('/previous', function(req, res){
 });
 
 playerRouter.get('/list', function(req, res){
+	// var files = utils.musicList();
+	// var songs = [];
+	// for(var file in files){
+	// 	songs.push(new Song(files[file]));
+	// }
     res.setHeader('Content-Type', 'application/json');
 	res.send({
 		songs: utils.musicList()
@@ -306,6 +319,15 @@ playerRouter.get('/queue', function(req, res){
 		queue: queue
 	});
 });
+
+playerRouter.get('/queue/remove/:id', function(req, res){
+	res.setHeader('Content-Type', 'application/json');
+	removeFromQueue(req.params.id);
+	res.send({
+		queue: queue
+	});
+});
+
 /**
 Express APP
 **/

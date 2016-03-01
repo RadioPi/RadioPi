@@ -8,9 +8,10 @@ export default class SongsTable extends Component {
 		super(props);
 	}
 
-	handleButtonClicks = (e) => {
+	handleDeleteClick = (e) => {
 		e.preventDefault();
 		console.log(e.target.getAttribute("data"));
+		this.props.deleteFromQueue(e.target.getAttribute("data"));
 	}
 
 	render() {
@@ -22,15 +23,15 @@ export default class SongsTable extends Component {
 						<div className="table-scroll">
 							<table className="songs">
 								<tbody>
-									{this.props.songs.map((value, i) => {
+									{this.props.songs.map((value) => {
 										return (
 											<SongCard
-											key={i}
-											queuePos={i}
+											key={value.id}
+											queuePos={value.id}
 											buttonPic={deleteButton}
 											data={value.name}
 											changeSong={this.props.handleSongLinkClicks}
-											handleButtonClick={this.handleButtonClicks}
+											handleButtonClick={this.handleDeleteClick}
 											songName={value.name} />
 											)
 										})

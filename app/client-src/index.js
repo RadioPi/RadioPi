@@ -3,11 +3,11 @@ require('./sass/main.scss');
 import React from 'react';
 import ReactDOM from 'react-dom';
 import App from './App';
-import { Router, Route, hashHistory } from 'react-router';
+import { Router, Route, browserHistory } from 'react-router';
 
 
 ReactDOM.render(
-	<Router history={hashHistory}>
+	<Router history={browserHistory}>
 		<Route path="/" component={App}/>
 	</Router>
 	, document.getElementById('root'));

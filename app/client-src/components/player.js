@@ -36,6 +36,13 @@ export default class Player extends Component {
 		});
 	}
 
+	deleteFromQueue = (index) => {
+		let url = `${this.props.baseUrl}queue/remove/${index}`;
+		$.get(url, (data) => {
+			this.props.updateQueue(data.queue);
+		});
+	}
+
 	render() {
 		return (
 			<div>
@@ -50,11 +57,17 @@ export default class Player extends Component {
 				</div>
 				<div className="row">
 					<SongsTable title="Morceaux" size="6" songs={this.props.songs} handleSongLinkClicks={this.handleSongLinkClicks}/>
-					<QueueTable title="File" size="6" songs={this.props.queue} handleSongLinkClicks={this.handleQueueLinkClicks}/>
-					<PlayerBar baseUrl={this.props.baseUrl}
-					title={this.props.title} 
-					updateTitle={this.props.updateTitle}
-					updateQueue={this.props.updateQueue}/>
+					<QueueTable
+						title="File"
+						size="6"
+						songs={this.props.queue}
+						handleSongLinkClicks={this.handleQueueLinkClicks}
+						deleteFromQueue={this.deleteFromQueue}/>
+					<PlayerBar
+						baseUrl={this.props.baseUrl}
+						title={this.props.title} 
+						updateTitle={this.props.updateTitle}
+						updateQueue={this.props.updateQueue}/>
 				</div>
 			</div>
 			)
