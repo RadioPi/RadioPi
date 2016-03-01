@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import SongCard from './song_card';
+import deleteButton from '../img/delete.png';
 
 export default class SongsTable extends Component {
 
@@ -7,7 +8,13 @@ export default class SongsTable extends Component {
 		super(props);
 	}
 
+	handleButtonClicks = (e) => {
+		e.preventDefault();
+		console.log(e.target.getAttribute("data"));
+	}
+
 	render() {
+		var i = 0;
 		return (
 				<div className="large-6 columns">
 					<h4>{this.props.title}:</h4>
@@ -15,9 +22,16 @@ export default class SongsTable extends Component {
 						<div className="table-scroll">
 							<table className="songs">
 								<tbody>
-									{this.props.songs.map((value) => {
+									{this.props.songs.map((value, i) => {
 										return (
-											<SongCard key={value.id} data={value.name} changeSong={this.props.handleSongLinkClicks} songName={value.name} />
+											<SongCard
+											key={i}
+											queuePos={i}
+											buttonPic={deleteButton}
+											data={value.name}
+											changeSong={this.props.handleSongLinkClicks}
+											handleButtonClick={this.handleButtonClicks}
+											songName={value.name} />
 											)
 										})
 									}
