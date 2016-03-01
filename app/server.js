@@ -241,6 +241,8 @@ playerRouter.get('/play/:song/next', function(req, res){
 	res.setHeader('Content-Type', 'application/json');
 	if(utils.in_array(req.params.song, utils.musicList())){
 		addToQueue(req.params.song);
+		if(queue.length == 1)
+			play();
 		res.send({
 			queue: queue,
 			nowPlaying: nowPlaying()
@@ -249,6 +251,8 @@ playerRouter.get('/play/:song/next', function(req, res){
 		youtube.search(req.params.song, function(data){
 			if(utils.in_array(utils.cleanName(data.title), utils.musicList())){
 				addToQueue(utils.cleanName(data.title));
+				if(queue.length == 1)
+					play();
 				res.send({
 					queue: queue,
 					nowPlaying: nowPlaying()
@@ -256,6 +260,8 @@ playerRouter.get('/play/:song/next', function(req, res){
 			} else {
 				youtube.download(data.id, function(name){
 					addToQueue(name);
+							if(queue.length == 1)
+					play();
 					res.send({
 						queue: queue,
 						nowPlaying: nowPlaying()
@@ -264,9 +270,6 @@ playerRouter.get('/play/:song/next', function(req, res){
 			}
 		});
 	}
-	if(queue.length == 1)
-		play();
-
 });
 
 playerRouter.get('/togglePause', function(req, res){
