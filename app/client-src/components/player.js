@@ -1,10 +1,14 @@
 import React, { Component } from 'react';
+import $ from 'jquery';
+
+
 import SongCard from './song_card';
 import SearchBar from './searchBar';
 import PlayerBar from './playerBar';
 import SongsTable from './songsTable';
-import QueueTable from './queueTable';
-import $ from 'jquery'
+
+
+import deleteButton from '../img/delete.png';
 
 
 
@@ -43,6 +47,12 @@ export default class Player extends Component {
 		});
 	}
 
+	handleDeleteClick = (e) => {
+		e.preventDefault();
+		console.log(e.target.getAttribute("data"));
+		this.deleteFromQueue(e.target.getAttribute("data"));
+	}
+
 	render() {
 		return (
 			<div>
@@ -56,13 +66,20 @@ export default class Player extends Component {
 					</div>
 				</div>
 				<div className="row">
-					<SongsTable title="Morceaux" size="6" songs={this.props.songs} handleSongLinkClicks={this.handleSongLinkClicks}/>
-					<QueueTable
+					<SongsTable
+						title="Morceaux"
+						size="6"
+						songs={this.props.songs}
+						handleSongLinkClicks={this.handleSongLinkClicks}/>
+
+					<SongsTable
 						title="File"
 						size="6"
 						songs={this.props.queue}
 						handleSongLinkClicks={this.handleQueueLinkClicks}
-						deleteFromQueue={this.deleteFromQueue}/>
+						buttonPic={deleteButton}
+						handleButtonClick={this.handleDeleteClick}/>
+
 					<PlayerBar
 						baseUrl={this.props.baseUrl}
 						title={this.props.title} 

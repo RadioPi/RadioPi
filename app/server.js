@@ -302,14 +302,14 @@ playerRouter.get('/previous', function(req, res){
 });
 
 playerRouter.get('/list', function(req, res){
-	// var files = utils.musicList();
-	// var songs = [];
-	// for(var file in files){
-	// 	songs.push(new Song(files[file]));
-	// }
+	var files = utils.musicList();
+	var songs = [];
+	for(var file in files){
+		songs.push(new Song(files[file]));
+	}
     res.setHeader('Content-Type', 'application/json');
 	res.send({
-		songs: utils.musicList()
+		songs: songs
 	});
 });
 
