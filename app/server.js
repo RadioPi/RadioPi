@@ -24,6 +24,10 @@ var PORT = 1337;
 utils.checkCache();
 var CACHE_PATH = __dirname + '/cache/';
 youtube.setCachePath(CACHE_PATH);
+var SONGS_PATH = CACHE_PATH + 'songs/';
+var PICS_PATH = CACHE_PATH + 'pics/';
+
+app.use(express.static(PICS_PATH));
 
 /**
 
@@ -88,9 +92,9 @@ var setFile = function(file){
 	}
 
 	try{
-		player.setFile(CACHE_PATH + song + '.mp3');
+		player.setFile(SONGS_PATH + song + '.mp3');
 	} catch (error) {
-		player = new Mplayer(CACHE_PATH + song + '.mp3');
+		player = new Mplayer(SONGS_PATH + song + '.mp3');
 	}
 };
 
@@ -107,7 +111,6 @@ function removeFromQueue(id){
 	var index = queue.map(function(e) { return e.id; }).indexOf(id);
 	if(index > -1){
 		queue.splice(index, 1);
-		console.log('We got a match! Kappa');
 	}
 }
 
@@ -122,7 +125,7 @@ var play = function(file){
 		console.log(nowPlaying());
 	} else {
 		var nSong = new Song(file);
-		addToQueue(nSong);
+		//addToQueue(nSong);
 		setFile(nSong);
 		queuePos = queue.map(function(e) { return e.name; }).indexOf(file) - 1;
 		next();
@@ -249,7 +252,7 @@ playerRouter.get('/play/:song/next', function(req, res){
 	res.setHeader('Content-Type', 'application/json');
 	if(utils.in_array(req.params.song, utils.musicList())){
 		addToQueue(req.params.song);
-		if(queue.length == 1 && (!player.checkPlaying))
+		if(queue.length == 1)
 			play();
 		res.send({
 			queue: queue,
@@ -259,7 +262,7 @@ playerRouter.get('/play/:song/next', function(req, res){
 		youtube.search(req.params.song, function(data){
 			if(utils.in_array(utils.cleanName(data.title), utils.musicList())){
 				addToQueue(utils.cleanName(data.title));
-				if(queue.length == 1 && (!player.checkPlaying))
+				if(queue.length == 1)
 					play();
 				res.send({
 					queue: queue,
@@ -268,8 +271,8 @@ playerRouter.get('/play/:song/next', function(req, res){
 			} else {
 				youtube.download(data.id, function(name){
 					addToQueue(name);
-							if(queue.length == 1 && (!player.checkPlaying))
-					play();
+					if(queue.length == 1)
+						play();
 					res.send({
 						queue: queue,
 						nowPlaying: nowPlaying()

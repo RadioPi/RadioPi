@@ -35,13 +35,21 @@ export default class PlayerBar extends Component {
 	}
 
 	render(){
+		let size = 40;
 		return (
 			<div className="playerBar">
 				<div  className="row">
-					<div className="large-12 columns">
-						<a onClick={this.previous} ><img src={previous} /></a>
-						<a onClick={this.togglePause} ><img src={pause} /></a>
-						<a onClick={this.next} ><img src={next} /></a>
+					<div className="large-2 columns">
+						<a onClick={this.previous} ><img  height={size+"px"} width={size+"px"} src={previous} /></a>
+						<a onClick={this.togglePause} ><img  height={size+"px"} width={size+"px"} src={pause} /></a>
+						<a onClick={this.next} ><img  height={size+"px"} width={size+"px"} src={next} /></a>
+					</div>
+
+					<div className="hide-for-small-only large-1 columns">
+						<img height="50px" width="60px" src={this.props.thumbNail} />
+					</div>
+					<div className="large-1 columns">
+						<p>{this.props.title}</p>
 					</div>
 				</div>
 			</div>

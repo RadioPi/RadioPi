@@ -10,8 +10,14 @@ export default class SongsTable extends Component {
 
 
 	render() {
+		var className="columns";
+		if(this.props.classes !== undefined){
+			for(var e in this.props.classes){
+				className += ` ${this.props.classes[e]}`;
+			}
+		}
 		return (
-				<div className="large-6 columns">
+				<div className={className}>
 					<h4>{this.props.title}:</h4>
 					<div className="table-wrapper">
 						<div className="table-scroll">

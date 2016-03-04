@@ -50,7 +50,7 @@ function downloadVideo(url, name, callback){
 }
 
 function download2(url, name, callback){
-    var f = fs.createWriteStream(cachePath + utils.cleanName(name) + '.mp3');
+    var f = fs.createWriteStream(cachePath + 'songs/' + utils.cleanName(name) + '.mp3');
 	request
 	.get(url)
 	.on('error', function(err) {
@@ -71,8 +71,16 @@ exports.search = function(search, callback){
 		}else{
 			callback({
 				id: result.items[0].id.videoId,
-				title: result.items[0].snippet.title
+				title: result.items[0].snippet.title,
+				thumbnail: result.items[0].snippet.thumbnails.default.url
 			}, null);
+			var f = fs.createWriteStream(cachePath + 'pics/' + utils.jpgName(result.items[0].snippet.title) + '.jpg');
+			request
+			.get(result.items[0].snippet.thumbnails.default.url)
+			.on('error', function(err) {
+				console.log(err);
+			})
+			.pipe(f);
 		}
 	});
 };

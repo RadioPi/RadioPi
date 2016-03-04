@@ -15,17 +15,6 @@ export default class App extends Component {
 		};
 	}
 
-	pushSong = (song) => {
-		let youShallNotPush = true;
-		for(let song in this.state.songs){
-			youShallNotPush = this.state.songs[song] == song ? false : true;
-		}
-		if(youShallNotPush)
-			this.setState({
-				songs: this.state.songs.push(song)
-			});
-	}
-
 	updateQueue = (queue) => {
 		this.setState({
 			queue: queue
@@ -56,13 +45,13 @@ export default class App extends Component {
 		return (
 			<div>
 				<TopBar title={this.state.title}/>
-				<Player pushSong={this.pushSong}
-				title={this.state.title}
-				baseUrl={BASE_URL}
-				updateTitle={this.updateTitle}
-				updateQueue={this.updateQueue}
-				songs={this.state.songs}
-				queue={this.state.queue} />
+				<Player
+					title={this.state.title}
+					baseUrl={BASE_URL}
+					updateTitle={this.updateTitle}
+					updateQueue={this.updateQueue}
+					songs={this.state.songs}
+					queue={this.state.queue} />
 			</div>
 			)
 	}

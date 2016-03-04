@@ -54,6 +54,8 @@ export default class Player extends Component {
 	}
 
 	render() {
+		var thumbNail = `http://192.168.1.103:1337/${this.props.title.replace(/[^a-zA-Z0-9]/g, '')}.jpg`;
+		console.log(thumbNail);
 		return (
 			<div>
 				<div className="row">
@@ -67,12 +69,14 @@ export default class Player extends Component {
 				</div>
 				<div className="row">
 					<SongsTable
+						classes={['hide-for-small-only', 'large-4']}
 						title="Morceaux"
 						size="6"
 						songs={this.props.songs}
 						handleSongLinkClicks={this.handleSongLinkClicks}/>
 
 					<SongsTable
+						classes={['large-8']}
 						title="File"
 						size="6"
 						songs={this.props.queue}
@@ -83,6 +87,7 @@ export default class Player extends Component {
 					<PlayerBar
 						baseUrl={this.props.baseUrl}
 						title={this.props.title} 
+						thumbNail={thumbNail}
 						updateTitle={this.props.updateTitle}
 						updateQueue={this.props.updateQueue}/>
 				</div>

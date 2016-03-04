@@ -6,12 +6,18 @@ var fs = require('fs'),
 
 module.exports = {
 	checkCache: function() {
-		if(!fs.existsSync("./cache/")){
+		if(!fs.existsSync("./cache")){
 			fs.mkdirSync("./cache");
+		}
+		if(!fs.existsSync("./cache/songs")){
+			fs.mkdirSync("./cache/songs");
+		}
+		if(!fs.existsSync("./cache/pics")){
+			fs.mkdirSync("./cache/pics");
 		}
 	},
 	musicList: function() {
-		var files = fs.readdirSync('./cache/');
+		var files = fs.readdirSync('./cache/songs/');
 		var queue = [];
 		for(var i in files){
 			if(path.extname(files[i]) === ".mp3");
@@ -35,5 +41,8 @@ module.exports = {
 			name = name.replace(/\(/g, '');
 			name = name.replace(/\)/g, '');
 			return name;
+	},
+	jpgName: function(name){
+		return name.replace(/[^a-zA-Z0-9]/g, '');
 	}
 };

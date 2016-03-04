@@ -29,6 +29,9 @@ new WebpackDevServer(webpack(config), {
 var express = require('express');
 var app = express();
 var utils = require('./lib/utils.js');
+
+utils.checkCache();
+
 //var STATES = require('./lib/playerStates.js');
 var currentState = 0;
 
