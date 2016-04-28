@@ -31,8 +31,17 @@ function callApi(id, callback){
 		});
 
 		res.on('end', function(){
-			var apiResponse = JSON.parse(body);
-			callback(apiResponse);
+			try {
+				var apiResponse = JSON.parse(body);
+				console.log(apiResponse);
+				callback(apiResponse);
+			} catch(err) {
+				// console.log("Got err", err);
+				// var apiError  = {
+				// 	error: "Titre undisponible"
+				// }
+				// callback(apiError);
+			}
 		});
 	}).on('error', function(e){
 		console.log('Got an error:', e);
@@ -91,7 +100,12 @@ exports.setCachePath = function(path){
 
 exports.download = function(id, callback){
 	callApi(id, function(data){
-		download2(data.link, data.title, callback);
+		if(data.error)
+			callback(data);
+		else if(data.link && data.title)
+			download2(data.link, data.title, callback);
+		else
+			console.log('unavailable title');
 		// downloadVideo(data.link, data.title, callback);
 	});
 };

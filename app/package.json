@@ -20,6 +20,7 @@
     "express": "^4.13.4",
     "image-webpack-loader": "^1.6.3",
     "install": "^0.5.0",
+    "jade": "^1.11.0",
     "jquery": "^2.2.1",
     "materialize-css": "^0.97.5",
     "node-mplayer": "0.0.5",

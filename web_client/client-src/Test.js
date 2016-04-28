@@ -14,7 +14,7 @@ export default class Test extends Component {
 		return (
 			<Tabs
 				onSelect={this.handleSelect}
-				selectedIndex={2}>
+				selectedIndex={0}>
 
 				<TabList>
 					<Tab>Morceaux</Tab>

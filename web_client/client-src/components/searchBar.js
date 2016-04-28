@@ -24,8 +24,13 @@ export default class SearchBar extends Component {
 		});
 		$.get(this.props.baseUrl + 'play/' + this.state.search + '/next/', (data) => {
 			console.log(data);
-			this.props.updateTitle(data.nowPlaying);
-			this.props.updateQueue(data.queue);
+			if(data.error){
+				alert(data.error);
+				return;
+			} else if(data.nowPlaying && data.queue) {
+				this.props.updateTitle(data.nowPlaying);
+				this.props.updateQueue(data.queue);
+			}
 		});
 	}
 

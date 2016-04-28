@@ -43,7 +43,9 @@ export default class Player extends Component {
 	deleteFromQueue = (index) => {
 		let url = `${this.props.baseUrl}queue/remove/${index}`;
 		$.get(url, (data) => {
-			this.props.updateQueue(data.queue);
+			if(!data.error)
+				this.props.updateQueue(data.queue);
+			console.log(data.error);
 		});
 	}
 
@@ -54,7 +56,7 @@ export default class Player extends Component {
 	}
 
 	render() {
-		var thumbNail = `http://192.168.1.103:1337/${this.props.title.replace(/[^a-zA-Z0-9]/g, '')}.jpg`;
+		var thumbNail = `http://${this.props.baseIP}:1337/${this.props.title.replace(/[^a-zA-Z0-9]/g, '')}.jpg`;
 		console.log(thumbNail);
 		return (
 			<div>
