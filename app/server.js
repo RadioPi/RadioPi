@@ -19,7 +19,6 @@ var utils = require('./lib/utils.js');
 var Mplayer = require('node-mplayer');
 var youtube = require('./lib/youtube.js');
 var express = require('express');
-var session = require('express-session');
 var app = express();
 var server = require('http').Server(app);
 
@@ -45,12 +44,6 @@ var SONGS_PATH = CACHE_PATH + 'songs/';
 var PICS_PATH = CACHE_PATH + 'pics/';
 
 app.use(express.static(PICS_PATH));
-
-app.use(session({
-	secret: 'a$10$1t.uQHWhflwDcbDIcTIEeO25',
-	resave: true,
-	saveUninitialized: true
-}));
 
 /**
 
