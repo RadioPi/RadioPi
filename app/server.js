@@ -24,9 +24,7 @@ var bcrypt = require('bcryptjs');
 var app = express();
 var server = require('http').Server(app);
 
-var self = this;
 var Song = require('./lib/song.js');
-//var playlists = require('./config/playlists.json');
 
 /**
 Socket.io Config
@@ -436,11 +434,12 @@ app.use('/api/controls', playerRouter);
 app.use('/static', express.static(__dirname + '/dist/'));
 
 app.get('/', function(req, res){
+	req.session.admin = true;
 	res.sendFile(__dirname + '/index.html');
 });
 
 app.get('/admin/:key', function(req, res){
-	key = 'rosesarered';
+	var key = 'rosesarered';
 	if(req.params.key == key){
 		req.session.admin = true;
 		res.redirect('/');
