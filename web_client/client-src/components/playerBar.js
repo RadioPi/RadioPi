@@ -14,15 +14,23 @@ export default class PlayerBar extends Component {
 	next = (e) => {
 		e.preventDefault();
 		console.log(this.props.baseUrl + 'next');
-		$.get(this.props.baseUrl + 'next', (data) => {
-			this.props.updateTitle(data.nowPlaying);
+		$.get(`${this.props.baseUrl}controls/next/${this.props.token}`, (data) => {
+			if(data.success){
+				this.props.updateTitle(data.nowPlaying);
+			} else {
+				alert("Veuillez vous log pour utiliser cette fonction");
+			}
 		})
 	}
 
 	previous = (e) => {
 		e.preventDefault();
-		$.get(this.props.baseUrl + 'previous', (data) => {
-			this.props.updateTitle(data.nowPlaying);
+		$.get(`${this.props.baseUrl}controls/previous/${this.props.token}`, (data) => {
+			if(data.success){
+				this.props.updateTitle(data.nowPlaying);
+			} else {
+				alert("Veuillez vous log pour utiliser cette fonction");
+			}
 		})
 	}
 

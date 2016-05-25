@@ -22,7 +22,7 @@ export default class Player extends Component {
 	handleSongLinkClicks = (e) => {
 		e.preventDefault();
 		let song = e.target.getAttribute("data");
-		let url = `${this.props.baseUrl}play/${song}/next/`;
+		let url = `${this.props.baseUrl}controls/play/${song}/next/`;
 		console.log(url);
 		$.get(url, (data) => {
 			console.log(data);
@@ -34,18 +34,21 @@ export default class Player extends Component {
 	handleQueueLinkClicks = (e) => {
 		e.preventDefault();
 		let song = e.target.getAttribute("data");
-		let url = `${this.props.baseUrl}play/`;
-		$.get(`${this.props.baseUrl}play/${song}`, (data) => {
+		let url = `${this.props.baseUrl}controls/play/`;
+		$.get(`${this.props.baseUrl}controls/play/${song}`, (data) => {
 			this.props.updateTitle(data.nowPlaying);
 		});
 	}
 
 	deleteFromQueue = (index) => {
-		let url = `${this.props.baseUrl}queue/remove/${index}`;
+		let url = `${this.props.baseUrl}controls/queue/remove/${index}/${this.props.token}`;
 		$.get(url, (data) => {
-			if(!data.error)
+			console.log(data);
+			if(data.success){
 				this.props.updateQueue(data.queue);
-			console.log(data.error);
+			} else {
+				alert('Veuillez vous log pour utiliser cette fonction');
+			}
 		});
 	}
 
@@ -91,7 +94,8 @@ export default class Player extends Component {
 						title={this.props.title} 
 						thumbNail={thumbNail}
 						updateTitle={this.props.updateTitle}
-						updateQueue={this.props.updateQueue}/>
+						updateQueue={this.props.updateQueue}
+						token={this.props.token}/>
 				</div>
 			</div>
 			)

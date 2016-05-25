@@ -21,8 +21,16 @@ var youtube = require('./lib/youtube.js');
 var express = require('express');
 var app = express();
 var server = require('http').Server(app);
+var config = require('./config.json');
+var bcrypt = require('bcrypt');
 
 var Song = require('./lib/song.js');
+
+/**
+Garde les tokens des clients en mémoire
+**/
+var tokens = [];
+
 
 /**
 Socket.io Config
@@ -343,16 +351,36 @@ playerRouter.get('/togglePause', function(req, res){
 	});
 });
 
-playerRouter.get('/next', function(req, res){
+playerRouter.get('/next/:token?', function(req, res){
+	var token = req.params.token || "";
+	if(tokens.indexOf(token) == -1){
+		res.send({
+			success: false,
+			error: "Token invalide",
+			nowPlaying: nowPlaying()
+		});
+		return;
+	}
 	next();
 	res.send({
+		success: true,
 		nowPlaying: nowPlaying()
 	});
 });
 
 playerRouter.get('/previous', function(req, res){
+	var token = req.params.token || "";
+	if(tokens.indexOf(token) == -1){
+		res.send({
+			success: false,
+			error: "Token invalide",
+			nowPlaying: nowPlaying()
+		});
+		return;
+	}
 	previous();
 	res.send({
+		success: true,
 		nowPlaying: nowPlaying()
 	});
 });
@@ -377,10 +405,21 @@ playerRouter.get('/queue', function(req, res){
 	emitQueue();
 });
 
-playerRouter.get('/queue/remove/:id', function(req, res){
+playerRouter.get('/queue/remove/:id/:token?', function(req, res){
 	res.setHeader('Content-Type', 'application/json');
+	var token = req.params.token || "";
+	if(tokens.indexOf(token) == -1){
+		res.send({
+			success: false,
+			error: "Token invalide",
+			queue: queue
+		});
+		return;
+	}
+
 	removeFromQueue(req.params.id);
 	res.send({
+		success: true,
 		queue: queue
 	});
 	emitQueue();
@@ -412,6 +451,28 @@ app.use('/static', express.static(__dirname + '/dist/'));
 app.get('/', function(req, res){
 	res.sendFile(__dirname + '/index.html');
 });
+
+app.get('/api/login/:password?', function(req, res){
+	var pass = req.params.password || "";
+	var isPassValid = bcrypt.compareSync(pass, config.adminPassword);
+	if(!isPassValid){
+		res.send({
+			success: false,
+			message: "Invalid password"
+		});
+		return;
+	}
+
+	if(isPassValid){
+		var token = utils.guid();
+		tokens.push(token);
+		res.send({
+			success: true,
+			token: token
+		});
+		return;
+	}
+})
 
 server.listen(PORT, function(){
 	console.log('App listening on port', PORT);
