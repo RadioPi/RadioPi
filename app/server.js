@@ -20,7 +20,6 @@ var Mplayer = require('node-mplayer');
 var youtube = require('./lib/youtube.js');
 var express = require('express');
 var session = require('express-session');
-var bcrypt = require('bcryptjs');
 var app = express();
 var server = require('http').Server(app);
 
@@ -32,9 +31,9 @@ Socket.io Config
 var io = require('socket.io')(server);
 
 io.on('connection', function(socket){
-	// socket.emit('nowPlaying', {
-	// 	nowPlaying: nowPlaying()
-	// });
+	socket.emit('nowPlaying', {
+		nowPlaying: nowPlaying()
+	});
 });
 
 // Initial config
@@ -208,17 +207,13 @@ function autoNext() {
 		}
 	}
 };
-	
+
 setInterval(autoNext, 500);
 
 function nowPlaying(callback){
-	/**if(!queue[queuePos]){
-		if(callback)
-			callback('404')
-		return;
+	if(queue.length == 0){
+		return "nothing";
 	}
-	if(callback)
-		callback(queue[queuePos].name);**/
 	return queue[queuePos].name;
 };
 
@@ -229,14 +224,6 @@ function emitQueue(){
 }
 
 function emitNowPlaying(){
-	/**var song = nowPlaying(function (data){
-		if(data === '404')
-			return;
-		io.sockets.emit('nowPlaying', {
-			nowPlaying: data
-		});
-	});**/
-
 	io.sockets.emit('nowPlaying', {
 		nowPlaying: nowPlaying()
 	});
@@ -364,16 +351,14 @@ playerRouter.get('/togglePause', function(req, res){
 });
 
 playerRouter.get('/next', function(req, res){
-	if(req.session.admin)
-		next();
+	next();
 	res.send({
 		nowPlaying: nowPlaying()
 	});
 });
 
 playerRouter.get('/previous', function(req, res){
-	if(req.session.admin)
-		previous();
+	previous();
 	res.send({
 		nowPlaying: nowPlaying()
 	});
@@ -400,10 +385,8 @@ playerRouter.get('/queue', function(req, res){
 });
 
 playerRouter.get('/queue/remove/:id', function(req, res){
-	var sess = req.session;
 	res.setHeader('Content-Type', 'application/json');
-	if(sess.admin)
-		removeFromQueue(req.params.id);
+	removeFromQueue(req.params.id);
 	res.send({
 		queue: queue
 	});
@@ -434,19 +417,8 @@ app.use('/api/controls', playerRouter);
 app.use('/static', express.static(__dirname + '/dist/'));
 
 app.get('/', function(req, res){
-	req.session.admin = true;
 	res.sendFile(__dirname + '/index.html');
 });
-
-app.get('/admin/:key', function(req, res){
-	var key = 'rosesarered';
-	if(req.params.key == key){
-		req.session.admin = true;
-		res.redirect('/');
-	} else {
-		res.redirect('/');
-	}
-})
 
 server.listen(PORT, function(){
 	console.log('App listening on port', PORT);
