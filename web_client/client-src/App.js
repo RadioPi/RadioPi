@@ -3,9 +3,9 @@ import $ from 'jquery';
 import Player from './components/player';
 import TopBar from './components/TopBar';
 var socket = require('socket.io-client')();
-//var socket = require('socket.io-client')("192.168.1.103:1337");
+//var socket = require('socket.io-client')("192.168.0.4:1337");
 
-//const BASE_IP = '192.168.1.103';
+//const BASE_IP = '192.168.0.4';
 const BASE_IP = socket.io.uri.replace('http://', '').replace(':1337', '');
 const BASE_URL = `http://${BASE_IP}:1337/api/`;
 //const BASE_URL = `http://${BASE_IP}:1337/api/controls/`;

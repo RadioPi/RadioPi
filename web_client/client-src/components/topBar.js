@@ -10,7 +10,6 @@ export default class TopBar extends Component {
 	adminLogin = (e) => {
 		let password = prompt("Password?");
 		$.get(`${this.props.baseUrl}login/${password}`, (data) => {
-		//$.get('http://192.168.1.103:1337/api/login/' + password, (data) => {
 			console.log(data);
 			if(data.success){
 				this.props.updateToken(data.token);
